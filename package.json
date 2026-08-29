@@ -1,0 +1,41 @@
+{
+  "scripts": {
+    "test": "jest --config backend/test/jest-e2e.json",
+    "test:black-box": "jest backend/test/black-box --config backend/test/jest-e2e.json",
+    "test:white-box": "jest backend/test/white-box --config backend/test/jest-e2e.json",
+    "test:unit": "jest backend/test/unit --config backend/test/jest-e2e.json",
+    "test:integration": "jest backend/test/integration --config backend/test/jest-e2e.json",
+    "test:smoke": "jest backend/test/smoke --config backend/test/jest-e2e.json",
+    "test:regression": "jest backend/test/regression --config backend/test/jest-e2e.json",
+    "test:performance": "jest backend/test/performance --config backend/test/jest-e2e.json",
+    "test:e2e": "jest backend/test --config backend/test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.9",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.1.9",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.9",
+    "@nestjs/testing": "^11.1.9",
+    "@nestjs/typeorm": "^11.0.0",
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "passport": "^0.7.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "sql.js": "^1.13.0",
+    "supertest": "^7.1.4",
+    "typeorm": "^0.3.28"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/passport": "^1.0.17",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6"
+  }
+}

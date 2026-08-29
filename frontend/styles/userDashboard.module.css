@@ -1,0 +1,48 @@
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #1e3a8a;
+  --light: #f8fafc;
+  --text: #0f172a;
+}
+
+/* Sidebar transitions */
+.sidebar-collapsed {
+  transition: all 0.3s ease;
+}
+
+/* Smooth hover */
+.hover-soft:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+/* Card shadow upgrade */
+.card-shadow {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+/* Avatar border animation */
+.avatar-border {
+  transition: border 0.3s ease;
+}
+.avatar-border:hover {
+  border-color: var(--primary);
+}
+
+/* Table styling */
+.table-modern th {
+  font-weight: 600;
+  color: #475569;
+  padding-bottom: 0.75rem;
+}
+.table-modern td {
+  padding: 0.75rem 0;
+}
+
+/* Wishlist cards animation */
+.wishlist-card {
+  transition: transform 0.25s ease, box-shadow 0.2s ease;
+}
+.wishlist-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
