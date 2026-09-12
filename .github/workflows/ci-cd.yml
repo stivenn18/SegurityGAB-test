@@ -138,8 +138,6 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}
-          flavor: |
-            lower=true
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
