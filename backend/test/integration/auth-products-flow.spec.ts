@@ -11,7 +11,7 @@ import { Product } from '../../src/modules/products/products_entity/product_enti
 
 /**
  * Pruebas de Integración
- * 
+ *
  * Las pruebas de integración verifican que múltiples módulos o componentes
  * funcionen correctamente cuando se combinan. Prueban las interacciones
  * entre diferentes partes del sistema.
@@ -20,7 +20,8 @@ describe('Integration Tests - Auth + Products Flow', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    process.env.JWT_SECRET = process.env.JWT_SECRET || 'integration-test-secret';
+    process.env.JWT_SECRET =
+      process.env.JWT_SECRET || 'integration-test-secret';
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -105,7 +106,9 @@ describe('Integration Tests - Auth + Products Flow', () => {
 
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBeGreaterThan(0);
-      expect(res.body.some((p: any) => p.name === 'Cámara Integration Test')).toBe(true);
+      expect(
+        res.body.some((p: any) => p.name === 'Cámara Integration Test'),
+      ).toBe(true);
     });
   });
 
@@ -202,8 +205,12 @@ describe('Integration Tests - Auth + Products Flow', () => {
         .get('/products')
         .expect(200);
 
-      const updatedProduct = listRes.body.find((p: any) => p.id === product1.body.id);
-      const deletedProduct = listRes.body.find((p: any) => p.id === product2.body.id);
+      const updatedProduct = listRes.body.find(
+        (p: any) => p.id === product1.body.id,
+      );
+      const deletedProduct = listRes.body.find(
+        (p: any) => p.id === product2.body.id,
+      );
 
       expect(updatedProduct.name).toBe('Producto 1 Actualizado');
       expect(deletedProduct).toBeUndefined();

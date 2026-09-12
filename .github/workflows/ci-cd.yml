@@ -1,0 +1,139 @@
+name: CI/CD Pipeline - SegurityGAB
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==========================================
+  # 1. BACKEND CI (NestJS)
+  # ==========================================
+  backend-ci:
+    name: Backend CI (Lint, Build, Tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: npm ci
+
+      - name: Run ESLint Linter
+        run: npm run lint
+
+      - name: Build Backend (NestJS)
+        run: npm run build
+
+      - name: Run Backend Test Suite (Smoke, Unit, White-box, Integration, Black-box)
+        run: npm run test:ci
+        env:
+          NODE_ENV: test
+          DB_DISABLED: 'true'
+          JWT_SECRET: ci_test_jwt_secret_key_12345
+
+      - name: Upload Backend Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dist
+          path: backend/dist/
+          retention-days: 7
+
+  # ==========================================
+  # 2. FRONTEND CI (Next.js & React)
+  # ==========================================
+  frontend-ci:
+    name: Frontend CI (Unit Tests, Build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Run Frontend Unit & Integration Tests (Jest)
+        run: npm run test:ci
+
+      - name: Build Frontend (Next.js)
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
+
+      - name: Upload Frontend Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: |
+            frontend/.next/
+            frontend/public/
+          retention-days: 7
+
+  # ==========================================
+  # 3. CD / DEPLOYMENT (Continuous Delivery)
+  # ==========================================
+  cd-deploy:
+    name: Continuous Deployment (CD)
+    needs: [backend-ci, frontend-ci]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Backend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dist
+          path: backend/dist
+
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/.next
+
+      - name: Deployment Ready Status
+        run: |
+          echo "========================================="
+          echo " CI checks passed for Backend & Frontend"
+          echo " Production artifacts successfully generated"
+          echo " Ready for deployment to production environment"
+          echo "========================================="

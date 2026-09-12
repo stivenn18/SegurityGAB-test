@@ -75,9 +75,9 @@ describe('AdminService', () => {
   it('update: lanza NotFoundException si el usuario no existe', async () => {
     (repo.findOne as jest.Mock).mockResolvedValue(null);
 
-    await expect(service.update(999, { name: 'X' } as any)).rejects.toBeInstanceOf(
-      NotFoundException,
-    );
+    await expect(
+      service.update(999, { name: 'X' } as any),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('update: si viene password, la hashea y guarda', async () => {

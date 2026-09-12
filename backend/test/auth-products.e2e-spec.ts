@@ -89,7 +89,9 @@ describe('Auth + Products (e2e)', () => {
   });
 
   it('Products CRUD básico (sin auth)', async () => {
-    const empty = await request(app.getHttpServer()).get('/products').expect(200);
+    const empty = await request(app.getHttpServer())
+      .get('/products')
+      .expect(200);
     expect(Array.isArray(empty.body)).toBe(true);
 
     const created = await request(app.getHttpServer())
@@ -123,14 +125,18 @@ describe('Auth + Products (e2e)', () => {
       .get(`/products/${id}`)
       .expect(200);
 
-    expect(fetched.body).toEqual(expect.objectContaining({ id, name: 'Camara 1' }));
+    expect(fetched.body).toEqual(
+      expect.objectContaining({ id, name: 'Camara 1' }),
+    );
 
     const updated = await request(app.getHttpServer())
       .put(`/products/${id}`)
       .send({ name: 'Camara 1b' })
       .expect(200);
 
-    expect(updated.body).toEqual(expect.objectContaining({ id, name: 'Camara 1b' }));
+    expect(updated.body).toEqual(
+      expect.objectContaining({ id, name: 'Camara 1b' }),
+    );
 
     await request(app.getHttpServer()).delete(`/products/${id}`).expect(200);
   });

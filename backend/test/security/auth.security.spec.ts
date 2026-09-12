@@ -40,21 +40,17 @@ describe('Auth Module - Security Tests (15)', () => {
     await app.init();
 
     // Crear usuario
-    await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        name: 'Security User',
-        email: 'security@test.com',
-        password: 'password123',
-      });
+    await request(app.getHttpServer()).post('/auth/register').send({
+      name: 'Security User',
+      email: 'security@test.com',
+      password: 'password123',
+    });
 
     // Login
-    const res = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'security@test.com',
-        password: 'password123',
-      });
+    const res = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'security@test.com',
+      password: 'password123',
+    });
 
     token = res.body.access_token;
   });
@@ -103,19 +99,15 @@ describe('Auth Module - Security Tests (15)', () => {
 
   // 6
   it('no debería revelar si el usuario existe', async () => {
-    const r1 = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'noexiste@test.com',
-        password: '123456',
-      });
+    const r1 = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'noexiste@test.com',
+      password: '123456',
+    });
 
-    const r2 = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'security@test.com',
-        password: 'wrongpass',
-      });
+    const r2 = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'security@test.com',
+      password: 'wrongpass',
+    });
 
     expect(r1.status).toBe(401);
     expect(r2.status).toBe(401);
@@ -145,10 +137,7 @@ describe('Auth Module - Security Tests (15)', () => {
 
   // 9
   it('no debería permitir login con datos vacíos', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({})
-      .expect(500);
+    await request(app.getHttpServer()).post('/auth/login').send({}).expect(500);
   });
 
   // 10
@@ -158,12 +147,10 @@ describe('Auth Module - Security Tests (15)', () => {
 
   // 11
   it('no debería devolver password en login', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'security@test.com',
-        password: 'password123',
-      });
+    const res = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'security@test.com',
+      password: 'password123',
+    });
 
     expect(res.text).not.toContain('password');
   });
@@ -186,13 +173,11 @@ describe('Auth Module - Security Tests (15)', () => {
 
   // 14
   it('debería registrar usuarios con password cifrada', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        name: 'Hash Test',
-        email: 'hash@test.com',
-        password: 'password123',
-      });
+    const res = await request(app.getHttpServer()).post('/auth/register').send({
+      name: 'Hash Test',
+      email: 'hash@test.com',
+      password: 'password123',
+    });
 
     expect(res.text).not.toContain('password123');
   });

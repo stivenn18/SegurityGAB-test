@@ -40,16 +40,21 @@ describe('AdminController', () => {
       controller.create({ email: 'a@a.com', password: 'x' } as any),
     ).resolves.toEqual({ id: 1, email: 'a@a.com' });
 
-    expect(service.create).toHaveBeenCalledWith({ email: 'a@a.com', password: 'x' });
+    expect(service.create).toHaveBeenCalledWith({
+      email: 'a@a.com',
+      password: 'x',
+    });
   });
 
   it('update: delega en AdminService.update', async () => {
     service.update.mockResolvedValue({ id: 2, name: 'B' });
 
-    await expect(controller.update('2', { name: 'B' } as any)).resolves.toEqual({
-      id: 2,
-      name: 'B',
-    });
+    await expect(controller.update('2', { name: 'B' } as any)).resolves.toEqual(
+      {
+        id: 2,
+        name: 'B',
+      },
+    );
 
     expect(service.update).toHaveBeenCalledWith(2, { name: 'B' });
   });

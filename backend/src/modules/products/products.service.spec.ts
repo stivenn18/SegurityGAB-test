@@ -49,12 +49,14 @@ describe('ProductsService', () => {
   it('findOne: lanza NotFoundException si no existe', async () => {
     (repo.findOne as jest.Mock).mockResolvedValue(null);
 
-    await expect(service.findOne(999)).rejects.toBeInstanceOf(NotFoundException);
+    await expect(service.findOne(999)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('create: guarda el producto', async () => {
     const input = { name: 'A' } as any;
-    (repo.save as jest.Mock).mockResolvedValue({ id: 1, ...input } as any);
+    (repo.save as jest.Mock).mockResolvedValue({ id: 1, ...input });
 
     await expect(service.create(input)).resolves.toEqual({ id: 1, ...input });
     expect(repo.save).toHaveBeenCalledWith(input);
@@ -62,7 +64,10 @@ describe('ProductsService', () => {
 
   it('update: actualiza y retorna el producto actualizado (via findOne)', async () => {
     (repo.update as jest.Mock).mockResolvedValue({} as any);
-    (repo.findOne as jest.Mock).mockResolvedValue({ id: 5, name: 'updated' } as any);
+    (repo.findOne as jest.Mock).mockResolvedValue({
+      id: 5,
+      name: 'updated',
+    } as any);
 
     await expect(service.update(5, { name: 'updated' })).resolves.toEqual({
       id: 5,

@@ -1,4 +1,3 @@
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,10 +26,10 @@ export class AdminService {
     return this.userRepo.save(user);
   }
 
-
   async update(id: number, data: UpdateUserDto): Promise<User> {
     const user = await this.userRepo.findOne({ where: { id } });
-    if (!user) throw new NotFoundException(`Usuario con id ${id} no encontrado`);
+    if (!user)
+      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
 
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
@@ -42,10 +41,10 @@ export class AdminService {
 
   async remove(id: number): Promise<{ message: string }> {
     const user = await this.userRepo.findOne({ where: { id } });
-    if (!user) throw new NotFoundException(`Usuario con id ${id} no encontrado`);
+    if (!user)
+      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
 
     await this.userRepo.remove(user);
     return { message: `Usuario con id ${id} eliminado correctamente` };
-
   }
 }

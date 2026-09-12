@@ -11,11 +11,11 @@ import { Product } from '../../src/modules/products/products_entity/product_enti
 
 /**
  * Pruebas de Performance (Rendimiento)
- * 
+ *
  * Las pruebas de performance evalúan el comportamiento del sistema bajo
  * diferentes condiciones de carga, midiendo tiempos de respuesta,
  * throughput y uso de recursos.
- * 
+ *
  * Tipos incluidos:
  * - Pruebas de Carga: Comportamiento bajo carga normal/alta
  * - Pruebas de Estrés: Límites del sistema
@@ -55,12 +55,10 @@ describe('Performance Tests - Load & Stress', () => {
     it('GET /products debe responder en menos de 100ms (sin carga)', async () => {
       const startTime = Date.now();
 
-      await request(app.getHttpServer())
-        .get('/products')
-        .expect(200);
+      await request(app.getHttpServer()).get('/products').expect(200);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`⏱️  GET /products: ${duration}ms`);
       expect(duration).toBeLessThan(100);
     });
@@ -78,19 +76,17 @@ describe('Performance Tests - Load & Stress', () => {
         .expect(201);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`⏱️  POST /auth/register: ${duration}ms`);
       expect(duration).toBeLessThan(500);
     });
 
     it('POST /auth/login debe responder en menos de 300ms', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          name: 'Login Perf',
-          email: 'loginperf@test.com',
-          password: 'perfpass',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        name: 'Login Perf',
+        email: 'loginperf@test.com',
+        password: 'perfpass',
+      });
 
       const startTime = Date.now();
 
@@ -103,7 +99,7 @@ describe('Performance Tests - Load & Stress', () => {
         .expect(201);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`⏱️  POST /auth/login: ${duration}ms`);
       expect(duration).toBeLessThan(300);
     });
@@ -125,7 +121,7 @@ describe('Performance Tests - Load & Stress', () => {
         .expect(201);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`⏱️  POST /products: ${duration}ms`);
       expect(duration).toBeLessThan(200);
     });
@@ -138,9 +134,7 @@ describe('Performance Tests - Load & Stress', () => {
 
       for (let i = 0; i < 10; i++) {
         promises.push(
-          request(app.getHttpServer())
-            .get('/products')
-            .expect(200)
+          request(app.getHttpServer()).get('/products').expect(200),
         );
       }
 
@@ -163,16 +157,18 @@ describe('Performance Tests - Load & Stress', () => {
               name: `Load Test User ${i}`,
               email: `loadtest${i}${Date.now()}@test.com`,
               password: 'loadpass123',
-            })
+            }),
         );
       }
 
       const results = await Promise.all(promises);
       const duration = Date.now() - startTime;
 
-      const successCount = results.filter(r => r.status === 201).length;
+      const successCount = results.filter((r) => r.status === 201).length;
 
-      console.log(`⏱️  20 registros concurrentes: ${duration}ms (${successCount} exitosos)`);
+      console.log(
+        `⏱️  20 registros concurrentes: ${duration}ms (${successCount} exitosos)`,
+      );
       expect(successCount).toBeGreaterThan(15); // Al menos 75% exitoso
       expect(duration).toBeLessThan(10000); // 10 segundos máximo
     });
@@ -208,21 +204,21 @@ describe('Performance Tests - Load & Stress', () => {
 
       const startTime = Date.now();
 
-      const res = await request(app.getHttpServer())
-        .post('/products')
-        .send({
-          name: longName,
-          description: 'Test long name',
-          price: 100,
-          stock: 1,
-          image: '/long.jpg',
-          long_description: 'Test',
-          model: 'LONG-1',
-        });
+      const res = await request(app.getHttpServer()).post('/products').send({
+        name: longName,
+        description: 'Test long name',
+        price: 100,
+        stock: 1,
+        image: '/long.jpg',
+        long_description: 'Test',
+        model: 'LONG-1',
+      });
 
       const duration = Date.now() - startTime;
 
-      console.log(`⏱️  Producto con nombre largo: ${duration}ms (Status: ${res.status})`);
+      console.log(
+        `⏱️  Producto con nombre largo: ${duration}ms (Status: ${res.status})`,
+      );
       expect(duration).toBeLessThan(500);
     });
 
@@ -321,15 +317,15 @@ describe('Performance Tests - Load & Stress', () => {
       const startTime = Date.now();
 
       for (let i = 0; i < iterations; i++) {
-        await request(app.getHttpServer())
-          .get('/products')
-          .expect(200);
+        await request(app.getHttpServer()).get('/products').expect(200);
       }
 
       const duration = Date.now() - startTime;
       const requestsPerSecond = (iterations / duration) * 1000;
 
-      console.log(`📊 Throughput GET /products: ${requestsPerSecond.toFixed(2)} req/s`);
+      console.log(
+        `📊 Throughput GET /products: ${requestsPerSecond.toFixed(2)} req/s`,
+      );
       expect(requestsPerSecond).toBeGreaterThan(5); // Al menos 5 req/s
     });
   });

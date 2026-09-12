@@ -9,7 +9,7 @@ import { CreateUserDto } from '../../src/modules/users/dto/create-user.dto';
 
 /**
  * Pruebas de Caja Blanca - AuthService
- * 
+ *
  * Las pruebas de caja blanca examinan la estructura interna del código,
  * incluyendo rutas de ejecución, condiciones, ciclos y lógica interna.
  * Se conoce la implementación y se prueban todos los caminos posibles.
@@ -60,10 +60,12 @@ describe('AuthService - White Box Tests', () => {
       mockUsersService.findByEmail.mockResolvedValue(null);
 
       await expect(
-        authService.login('noexiste@example.com', 'password123')
+        authService.login('noexiste@example.com', 'password123'),
       ).rejects.toThrow(UnauthorizedException);
 
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith('noexiste@example.com');
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
+        'noexiste@example.com',
+      );
       expect(mockUsersService.findByEmail).toHaveBeenCalledTimes(1);
       // No debe llegar a comparar contraseña ni generar token
       expect(mockJwtService.sign).not.toHaveBeenCalled();
@@ -85,10 +87,12 @@ describe('AuthService - White Box Tests', () => {
 
       // bcrypt.compare devolverá false
       await expect(
-        authService.login('test@example.com', 'wrongpassword')
+        authService.login('test@example.com', 'wrongpassword'),
       ).rejects.toThrow(UnauthorizedException);
 
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
+        'test@example.com',
+      );
       // No debe generar token
       expect(mockJwtService.sign).not.toHaveBeenCalled();
     });
@@ -100,7 +104,7 @@ describe('AuthService - White Box Tests', () => {
     it('debe generar token JWT cuando las credenciales son válidas (Ruta 3)', async () => {
       const password = 'correctpassword';
       const hashedPassword = await bcrypt.hash(password, 10);
-      
+
       const mockUser = {
         id: 1,
         email: 'test@example.com',
@@ -139,7 +143,7 @@ describe('AuthService - White Box Tests', () => {
     it('debe usar el mismo mensaje de error para usuario no encontrado y contraseña incorrecta', async () => {
       // Caso 1: Usuario no existe
       mockUsersService.findByEmail.mockResolvedValue(null);
-      
+
       let error1;
       try {
         await authService.login('noexiste@example.com', 'password');
@@ -245,7 +249,7 @@ describe('AuthService - White Box Tests', () => {
     it('debe ejecutar todas las líneas en login exitoso', async () => {
       const password = 'testpass';
       const hashedPassword = await bcrypt.hash(password, 10);
-      
+
       const mockUser = {
         id: 10,
         email: 'fullpath@example.com',
@@ -260,12 +264,12 @@ describe('AuthService - White Box Tests', () => {
 
       // Línea 15: llamada a findByEmail
       expect(mockUsersService.findByEmail).toHaveBeenCalled();
-      
+
       // Líneas 16-17: verificación de usuario (branch if)
       // No debe lanzar error, así que pasamos esta branch
-      
+
       // Línea 19: bcrypt.compare se ejecutó (internamente)
-      
+
       // Líneas 23-24: construcción de payload
       expect(mockJwtService.sign).toHaveBeenCalledWith({
         sub: 10,
@@ -294,7 +298,9 @@ describe('AuthService - White Box Tests', () => {
         // Esperamos que falle
       }
 
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
+        'test@example.com',
+      );
     });
 
     /**
@@ -303,7 +309,7 @@ describe('AuthService - White Box Tests', () => {
     it('debe delegar la generación de token a JwtService', async () => {
       const password = 'testpass';
       const hashedPassword = await bcrypt.hash(password, 10);
-      
+
       const mockUser = {
         id: 1,
         email: 'test@example.com',
@@ -322,7 +328,7 @@ describe('AuthService - White Box Tests', () => {
           sub: expect.any(Number),
           email: expect.any(String),
           role: expect.any(String),
-        })
+        }),
       );
     });
   });
@@ -333,7 +339,7 @@ describe('AuthService - White Box Tests', () => {
      * - 1 (camino base)
      * - +1 (if !user)
      * - +1 (if !valid)
-     * 
+     *
      * Debemos probar todos los caminos
      */
     it('debe cubrir todos los caminos de complejidad ciclomática en login', async () => {

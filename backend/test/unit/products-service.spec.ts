@@ -8,7 +8,7 @@ import { Product } from '../../src/modules/products/products_entity/product_enti
 
 /**
  * Pruebas Unitarias - ProductsService
- * 
+ *
  * Las pruebas unitarias verifican el comportamiento de una unidad individual
  * de código (generalmente un método o función) de forma aislada.
  * Se usan mocks para aislar la unidad de sus dependencias.
@@ -90,7 +90,7 @@ describe('ProductsService - Unit Tests', () => {
 
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
       await expect(service.findOne(999)).rejects.toThrow(
-        'Product with id 999 not found'
+        'Product with id 999 not found',
       );
     });
 
@@ -102,7 +102,9 @@ describe('ProductsService - Unit Tests', () => {
 
       await service.findOne(42);
 
-      expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { id: 42 } });
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 42 },
+      });
     });
   });
 
@@ -141,7 +143,7 @@ describe('ProductsService - Unit Tests', () => {
       } as Product;
 
       mockRepository.save.mockImplementation((product) =>
-        Promise.resolve({ ...product, id: 10 } as Product)
+        Promise.resolve({ ...product, id: 10 } as Product),
       );
 
       const result = await service.create(productData);
@@ -169,7 +171,9 @@ describe('ProductsService - Unit Tests', () => {
 
       const result = await service.update(5, { name: 'New Name' });
 
-      expect(mockRepository.update).toHaveBeenCalledWith(5, { name: 'New Name' });
+      expect(mockRepository.update).toHaveBeenCalledWith(5, {
+        name: 'New Name',
+      });
       expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { id: 5 } });
       expect(result).toEqual(updatedProduct);
     });
@@ -179,7 +183,7 @@ describe('ProductsService - Unit Tests', () => {
       mockRepository.findOne.mockResolvedValue(null);
 
       await expect(service.update(999, { name: 'Test' })).rejects.toThrow(
-        NotFoundException
+        NotFoundException,
       );
     });
 
@@ -262,9 +266,9 @@ describe('ProductsService - Unit Tests', () => {
     it('debe propagar errores del repositorio en save', async () => {
       mockRepository.save.mockRejectedValue(new Error('Constraint violation'));
 
-      await expect(
-        service.create({ name: 'Test' } as Product)
-      ).rejects.toThrow('Constraint violation');
+      await expect(service.create({ name: 'Test' } as Product)).rejects.toThrow(
+        'Constraint violation',
+      );
     });
   });
 

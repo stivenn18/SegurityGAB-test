@@ -11,7 +11,7 @@ import { Product } from '../../src/modules/products/products_entity/product_enti
 
 /**
  * Pruebas de Regresión
- * 
+ *
  * Las pruebas de regresión verifican que las funcionalidades que antes
  * funcionaban correctamente sigan funcionando después de cambios en el código.
  * Se enfocan en prevenir la reintroducción de errores previamente corregidos.
@@ -50,7 +50,7 @@ describe('Regression Tests - Critical Flows', () => {
     /**
      * Bug reportado: El sistema revelaba si un email estaba registrado
      * basándose en diferentes mensajes de error
-     * 
+     *
      * Fix aplicado: Unificar mensajes de error
      * Esta prueba verifica que el bug no regrese
      */
@@ -66,18 +66,18 @@ describe('Regression Tests - Critical Flows', () => {
       expect(res.body.message).toBeDefined();
       // No debe mencionar específicamente que el usuario no existe
       expect(res.body.message.toLowerCase()).not.toContain('not found');
-      expect(res.body.message.toLowerCase()).not.toContain('no existe el usuario');
+      expect(res.body.message.toLowerCase()).not.toContain(
+        'no existe el usuario',
+      );
     });
 
     it('debe mantener mensaje genérico para contraseña incorrecta', async () => {
       // Primero crear usuario
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          name: 'Test User',
-          email: 'existe@example.com',
-          password: 'correctpass',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        name: 'Test User',
+        email: 'existe@example.com',
+        password: 'correctpass',
+      });
 
       const res = await request(app.getHttpServer())
         .post('/auth/login')
@@ -90,14 +90,16 @@ describe('Regression Tests - Critical Flows', () => {
       expect(res.body.message).toBeDefined();
       // No debe mencionar específicamente que la contraseña es incorrecta
       expect(res.body.message.toLowerCase()).not.toContain('wrong password');
-      expect(res.body.message.toLowerCase()).not.toContain('contraseña incorrecta');
+      expect(res.body.message.toLowerCase()).not.toContain(
+        'contraseña incorrecta',
+      );
     });
   });
 
   describe('[BUG-002] Password no debe devolverse en respuestas de Auth', () => {
     /**
      * Bug reportado: El endpoint de registro devolvía el hash de password
-     * 
+     *
      * Fix aplicado: Eliminar password del objeto de respuesta
      * Esta prueba verifica que el bug no regrese
      */
@@ -117,13 +119,11 @@ describe('Regression Tests - Critical Flows', () => {
     });
 
     it('login no debe incluir password en user object', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          name: 'Login Pass Test',
-          email: 'loginpass@example.com',
-          password: 'testpass',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        name: 'Login Pass Test',
+        email: 'loginpass@example.com',
+        password: 'testpass',
+      });
 
       const res = await request(app.getHttpServer())
         .post('/auth/login')
@@ -140,14 +140,12 @@ describe('Regression Tests - Critical Flows', () => {
   describe('[BUG-003] Producto con ID inexistente debe devolver 404', () => {
     /**
      * Bug reportado: GET /products/:id con ID inexistente devolvía 200
-     * 
+     *
      * Fix aplicado: Lanzar NotFoundException
      * Esta prueba verifica que el bug no regrese
      */
     it('debe devolver 404 para producto inexistente', async () => {
-      await request(app.getHttpServer())
-        .get('/products/99999')
-        .expect(404);
+      await request(app.getHttpServer()).get('/products/99999').expect(404);
     });
 
     it('debe incluir mensaje descriptivo en error 404', async () => {
@@ -163,7 +161,7 @@ describe('Regression Tests - Critical Flows', () => {
   describe('[BUG-004] Actualización parcial de productos debe preservar otros campos', () => {
     /**
      * Bug reportado: Al actualizar un campo, otros campos se borraban
-     * 
+     *
      * Fix aplicado: Usar actualización parcial en repository.update
      * Esta prueba verifica que el bug no regrese
      */
@@ -199,7 +197,7 @@ describe('Regression Tests - Critical Flows', () => {
   describe('[BUG-005] Validación de email debe ser case-insensitive', () => {
     /**
      * Bug reportado: Se podían crear usuarios con mismo email en diferente case
-     * 
+     *
      * Nota: Si este fix no está implementado, esta prueba fallará
      * y debe agregarse la funcionalidad
      */
@@ -224,20 +222,20 @@ describe('Regression Tests - Critical Flows', () => {
 
       // Documentar comportamiento actual
       if (res.status === 201) {
-        console.warn('⚠️  Sistema permite emails duplicados con diferente case');
+        console.warn(
+          '⚠️  Sistema permite emails duplicados con diferente case',
+        );
       }
     });
   });
 
   describe('[FEATURE] Regresión de flujos críticos de autenticación', () => {
     it('debe mantener formato JWT válido en tokens', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          name: 'JWT Test',
-          email: 'jwt@example.com',
-          password: 'jwtpass',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        name: 'JWT Test',
+        email: 'jwt@example.com',
+        password: 'jwtpass',
+      });
 
       const res = await request(app.getHttpServer())
         .post('/auth/login')
@@ -249,7 +247,7 @@ describe('Regression Tests - Critical Flows', () => {
 
       const token = res.body.access_token;
       const parts = token.split('.');
-      
+
       // JWT debe tener 3 partes: header.payload.signature
       expect(parts).toHaveLength(3);
       expect(parts[0]).toBeTruthy();
@@ -277,9 +275,7 @@ describe('Regression Tests - Critical Flows', () => {
       const id = created.body.id;
 
       // Read
-      await request(app.getHttpServer())
-        .get(`/products/${id}`)
-        .expect(200);
+      await request(app.getHttpServer()).get(`/products/${id}`).expect(200);
 
       // Update
       await request(app.getHttpServer())
@@ -288,26 +284,20 @@ describe('Regression Tests - Critical Flows', () => {
         .expect(200);
 
       // Delete
-      await request(app.getHttpServer())
-        .delete(`/products/${id}`)
-        .expect(200);
+      await request(app.getHttpServer()).delete(`/products/${id}`).expect(200);
 
       // Verify deletion
-      await request(app.getHttpServer())
-        .get(`/products/${id}`)
-        .expect(404);
+      await request(app.getHttpServer()).get(`/products/${id}`).expect(404);
     });
   });
 
   describe('[PERFORMANCE] Regresión de tiempos de respuesta', () => {
     it('login debe completarse en tiempo razonable', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          name: 'Perf Test',
-          email: 'perf@example.com',
-          password: 'perfpass',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        name: 'Perf Test',
+        email: 'perf@example.com',
+        password: 'perfpass',
+      });
 
       const startTime = Date.now();
 
@@ -328,9 +318,7 @@ describe('Regression Tests - Critical Flows', () => {
     it('listar productos debe completarse en tiempo razonable', async () => {
       const startTime = Date.now();
 
-      await request(app.getHttpServer())
-        .get('/products')
-        .expect(200);
+      await request(app.getHttpServer()).get('/products').expect(200);
 
       const duration = Date.now() - startTime;
 

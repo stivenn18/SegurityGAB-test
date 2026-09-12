@@ -8,7 +8,7 @@ import { User } from '../../src/modules/users/user_entity/user.entity';
 
 /**
  * Pruebas de Validación - CreateUserDto
- * 
+ *
  * Validan que las reglas definidas en el DTO
  * se cumplan correctamente (class-validator).
  */

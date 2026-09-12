@@ -4,12 +4,11 @@ import request from 'supertest';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from '../../src/modules/products/products.module';
 
-
 import { Product } from '../../src/modules/products/products_entity/product_entity';
 
 /**
  * Pruebas de Caja Negra - Módulo de Productos
- * 
+ *
  * Pruebas que validan el comportamiento del CRUD de productos
  * sin conocer su implementación interna.
  */
@@ -51,29 +50,25 @@ describe('Products Module - Black Box Tests (e2e)', () => {
 
     it('debería devolver todos los productos existentes', async () => {
       // Crear productos de prueba
-      await request(app.getHttpServer())
-        .post('/products')
-        .send({
-          name: 'Cámara Alpha',
-          description: 'Cámara profesional',
-          price: 599.99,
-          stock: 10,
-          image: '/uploads/camera1.jpg',
-          long_description: 'Descripción detallada de la cámara',
-          model: 'ALPHA-2024',
-        });
+      await request(app.getHttpServer()).post('/products').send({
+        name: 'Cámara Alpha',
+        description: 'Cámara profesional',
+        price: 599.99,
+        stock: 10,
+        image: '/uploads/camera1.jpg',
+        long_description: 'Descripción detallada de la cámara',
+        model: 'ALPHA-2024',
+      });
 
-      await request(app.getHttpServer())
-        .post('/products')
-        .send({
-          name: 'Cámara Beta',
-          description: 'Cámara compacta',
-          price: 299.99,
-          stock: 15,
-          image: '/uploads/camera2.jpg',
-          long_description: 'Descripción detallada',
-          model: 'BETA-2024',
-        });
+      await request(app.getHttpServer()).post('/products').send({
+        name: 'Cámara Beta',
+        description: 'Cámara compacta',
+        price: 299.99,
+        stock: 15,
+        image: '/uploads/camera2.jpg',
+        long_description: 'Descripción detallada',
+        model: 'BETA-2024',
+      });
 
       const res = await request(app.getHttpServer())
         .get('/products')
@@ -149,17 +144,15 @@ describe('Products Module - Black Box Tests (e2e)', () => {
     let productId: number;
 
     beforeAll(async () => {
-      const res = await request(app.getHttpServer())
-        .post('/products')
-        .send({
-          name: 'Producto Para Buscar',
-          description: 'Test búsqueda',
-          price: 150,
-          stock: 20,
-          image: '/test.jpg',
-          long_description: 'Descripción test',
-          model: 'SEARCH-001',
-        });
+      const res = await request(app.getHttpServer()).post('/products').send({
+        name: 'Producto Para Buscar',
+        description: 'Test búsqueda',
+        price: 150,
+        stock: 20,
+        image: '/test.jpg',
+        long_description: 'Descripción test',
+        model: 'SEARCH-001',
+      });
       productId = res.body.id;
     });
 
@@ -174,15 +167,11 @@ describe('Products Module - Black Box Tests (e2e)', () => {
     });
 
     it('debería devolver 404 para producto inexistente', async () => {
-      await request(app.getHttpServer())
-        .get('/products/999999')
-        .expect(404);
+      await request(app.getHttpServer()).get('/products/999999').expect(404);
     });
 
     it('debería devolver error para ID inválido (no numérico)', async () => {
-      await request(app.getHttpServer())
-        .get('/products/abc')
-        .expect(404);
+      await request(app.getHttpServer()).get('/products/abc').expect(404);
     });
   });
 
@@ -190,17 +179,15 @@ describe('Products Module - Black Box Tests (e2e)', () => {
     let productId: number;
 
     beforeEach(async () => {
-      const res = await request(app.getHttpServer())
-        .post('/products')
-        .send({
-          name: 'Producto Original',
-          description: 'Descripción original',
-          price: 200,
-          stock: 10,
-          image: '/original.jpg',
-          long_description: 'Long desc',
-          model: 'ORIG-001',
-        });
+      const res = await request(app.getHttpServer()).post('/products').send({
+        name: 'Producto Original',
+        description: 'Descripción original',
+        price: 200,
+        stock: 10,
+        image: '/original.jpg',
+        long_description: 'Long desc',
+        model: 'ORIG-001',
+      });
       productId = res.body.id;
     });
 
@@ -237,7 +224,7 @@ describe('Products Module - Black Box Tests (e2e)', () => {
         .put(`/products/${productId}`)
         .send({
           name: 'Nuevo Nombre',
-          price: 350.00,
+          price: 350.0,
           stock: 25,
         })
         .expect(200);
@@ -268,17 +255,15 @@ describe('Products Module - Black Box Tests (e2e)', () => {
 
   describe('DELETE /products/:id - Eliminar producto', () => {
     it('debería eliminar un producto existente', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/products')
-        .send({
-          name: 'Producto A Eliminar',
-          description: 'Test delete',
-          price: 100,
-          stock: 5,
-          image: '/delete.jpg',
-          long_description: 'Test',
-          model: 'DEL-001',
-        });
+      const res = await request(app.getHttpServer()).post('/products').send({
+        name: 'Producto A Eliminar',
+        description: 'Test delete',
+        price: 100,
+        stock: 5,
+        image: '/delete.jpg',
+        long_description: 'Test',
+        model: 'DEL-001',
+      });
 
       const productId = res.body.id;
 
@@ -294,9 +279,7 @@ describe('Products Module - Black Box Tests (e2e)', () => {
 
     it('debería devolver 200 aunque el producto no exista', async () => {
       // Por diseño de TypeORM, delete no falla si el ID no existe
-      await request(app.getHttpServer())
-        .delete('/products/999999')
-        .expect(200);
+      await request(app.getHttpServer()).delete('/products/999999').expect(200);
     });
   });
 

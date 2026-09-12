@@ -1,5 +1,10 @@
 {
   "scripts": {
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "test:backend": "npm --prefix backend run test:ci",
+    "test:frontend": "npm --prefix frontend run test:ci",
+    "lint:backend": "npm --prefix backend run lint",
     "test": "jest --config backend/test/jest-e2e.json",
     "test:black-box": "jest backend/test/black-box --config backend/test/jest-e2e.json",
     "test:white-box": "jest backend/test/white-box --config backend/test/jest-e2e.json",

@@ -32,7 +32,10 @@ describe('UsersController', () => {
       controller.create({ email: 'a@a.com', password: 'x' } as any),
     ).resolves.toEqual({ id: 1, email: 'a@a.com' });
 
-    expect(service.createUser).toHaveBeenCalledWith({ email: 'a@a.com', password: 'x' });
+    expect(service.createUser).toHaveBeenCalledWith({
+      email: 'a@a.com',
+      password: 'x',
+    });
   });
 
   it('findAll: delega en UsersService.findAll', async () => {
@@ -45,7 +48,9 @@ describe('UsersController', () => {
   it('updateRole: delega en UsersService.updateRole', async () => {
     service.updateRole.mockResolvedValue({ id: 2, role: 'admin' });
 
-    await expect(controller.updateRole(2 as any, { role: 'admin' })).resolves.toEqual({
+    await expect(
+      controller.updateRole(2 as any, { role: 'admin' }),
+    ).resolves.toEqual({
       id: 2,
       role: 'admin',
     });

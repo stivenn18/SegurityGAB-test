@@ -9,7 +9,7 @@ import { User } from '../../src/modules/users/user_entity/user.entity';
 
 /**
  * Pruebas de Caja Negra - Módulo de Autenticación
- * 
+ *
  * Estas pruebas validan el comportamiento del sistema sin conocer
  * su implementación interna. Se prueban entradas y se verifican salidas.
  */
@@ -142,13 +142,11 @@ describe('Auth Module - Black Box Tests (e2e)', () => {
   describe('POST /auth/login - Inicio de sesión', () => {
     beforeAll(async () => {
       // Crear usuario de prueba
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          name: 'Login Test',
-          email: 'logintest@example.com',
-          password: 'testpass123',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        name: 'Login Test',
+        email: 'logintest@example.com',
+        password: 'testpass123',
+      });
     });
 
     it('debería iniciar sesión con credenciales válidas', async () => {

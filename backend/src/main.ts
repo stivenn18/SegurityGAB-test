@@ -6,7 +6,6 @@ import helmet from 'helmet';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
-
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(helmet());
   app.useGlobalFilters(new AllExceptionsFilter());
@@ -23,7 +22,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-
 
   await app.listen(process.env.PORT ?? 3001);
 }

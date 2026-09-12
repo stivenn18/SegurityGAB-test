@@ -11,7 +11,7 @@ describe('AppController (e2e)', () => {
     process.env.DB_DISABLED = 'true';
 
     // ts-jest runs in CJS; use require() so env vars are applied before module init.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+
     const { AppModule } = require('./../src/app.module');
 
     const moduleFixture: TestingModule = await Test.createTestingModule({

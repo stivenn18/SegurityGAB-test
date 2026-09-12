@@ -52,7 +52,9 @@ describe('ProductsController', () => {
 
   it('update: delega en ProductsService', async () => {
     service.update.mockResolvedValue({ id: 5, name: 'B' });
-    await expect(controller.update(5 as any, { name: 'B' } as any)).resolves.toEqual({
+    await expect(
+      controller.update(5 as any, { name: 'B' } as any),
+    ).resolves.toEqual({
       id: 5,
       name: 'B',
     });

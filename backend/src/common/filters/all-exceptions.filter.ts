@@ -33,7 +33,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       path: request.url,
       // Only expose message in production, or specific safe error details
       // For development, you might want to expose more details for debugging
-      message: typeof message === 'object' ? (message as any).message || message : message,
+      message:
+        typeof message === 'object'
+          ? (message as any).message || message
+          : message,
     });
   }
 }

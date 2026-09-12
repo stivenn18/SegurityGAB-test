@@ -11,7 +11,7 @@ import { Product } from '../../src/modules/products/products_entity/product_enti
 
 /**
  * Pruebas de Smoke (Sanidad)
- * 
+ *
  * Las pruebas de smoke son pruebas básicas y rápidas que verifican que
  * las funcionalidades principales del sistema están operativas.
  * Son las primeras pruebas que se ejecutan después de un despliegue.
@@ -69,37 +69,29 @@ describe('Smoke Tests - API Health Checks', () => {
     });
 
     it('🔥 Endpoint de login debe estar accesible', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: 'any@email.com',
-          password: 'anypass',
-        });
+      const res = await request(app.getHttpServer()).post('/auth/login').send({
+        email: 'any@email.com',
+        password: 'anypass',
+      });
 
       expect([200, 201, 401]).toContain(res.status);
     });
 
     it('🔥 Endpoint de productos GET debe estar accesible', async () => {
-      await request(app.getHttpServer())
-        .get('/products')
-        .expect(200);
+      await request(app.getHttpServer()).get('/products').expect(200);
     });
 
     it('🔥 Endpoint de productos POST debe estar accesible', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/products')
-        .send({
-          name: 'Smoke Product',
-          price: 100,
-        });
+      const res = await request(app.getHttpServer()).post('/products').send({
+        name: 'Smoke Product',
+        price: 100,
+      });
 
       expect([200, 201, 400, 500]).toContain(res.status);
     });
 
     it('🔥 Endpoint de usuarios GET debe estar accesible', async () => {
-      await request(app.getHttpServer())
-        .get('/users')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users').expect(200);
     });
   });
 
@@ -119,13 +111,11 @@ describe('Smoke Tests - API Health Checks', () => {
     });
 
     it('🔥 Debe poder hacer login después de registrarse', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          name: 'Login Flow User',
-          email: 'login@flow.com',
-          password: 'loginpass',
-        });
+      await request(app.getHttpServer()).post('/auth/register').send({
+        name: 'Login Flow User',
+        email: 'login@flow.com',
+        password: 'loginpass',
+      });
 
       const res = await request(app.getHttpServer())
         .post('/auth/login')
@@ -177,9 +167,7 @@ describe('Smoke Tests - API Health Checks', () => {
     });
 
     it('🔥 Debe devolver error 404 para producto inexistente', async () => {
-      await request(app.getHttpServer())
-        .get('/products/999999')
-        .expect(404);
+      await request(app.getHttpServer()).get('/products/999999').expect(404);
     });
 
     it('🔥 Debe devolver error 400 para datos inválidos en registro', async () => {
@@ -222,9 +210,7 @@ describe('Smoke Tests - API Health Checks', () => {
     it('🔥 Endpoints deben responder en tiempo razonable (<5s)', async () => {
       const startTime = Date.now();
 
-      await request(app.getHttpServer())
-        .get('/products')
-        .expect(200);
+      await request(app.getHttpServer()).get('/products').expect(200);
 
       const duration = Date.now() - startTime;
       expect(duration).toBeLessThan(5000);
@@ -263,15 +249,11 @@ describe('Smoke Tests - API Health Checks', () => {
     });
 
     it('🔥 Módulo de Products está operativo', async () => {
-      await request(app.getHttpServer())
-        .get('/products')
-        .expect(200);
+      await request(app.getHttpServer()).get('/products').expect(200);
     });
 
     it('🔥 Módulo de Users está operativo', async () => {
-      await request(app.getHttpServer())
-        .get('/users')
-        .expect(200);
+      await request(app.getHttpServer()).get('/users').expect(200);
     });
   });
 });

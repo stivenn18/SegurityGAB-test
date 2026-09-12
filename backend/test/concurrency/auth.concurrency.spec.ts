@@ -37,20 +37,16 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     await app.init();
 
     // Usuario base
-    await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        name: 'Base User',
-        email: 'base@test.com',
-        password: '123456',
-      });
+    await request(app.getHttpServer()).post('/auth/register').send({
+      name: 'Base User',
+      email: 'base@test.com',
+      password: '123456',
+    });
 
-    const login = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'base@test.com',
-        password: '123456',
-      });
+    const login = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'base@test.com',
+      password: '123456',
+    });
 
     validToken = login.body.access_token;
   });
@@ -73,8 +69,8 @@ describe('Auth Module - Concurrency Tests (15)', () => {
 
     const responses = await Promise.all(requests);
 
-    const success = responses.filter(r => r.status === 201);
-    const failed = responses.filter(r => r.status !== 201);
+    const success = responses.filter((r) => r.status === 201);
+    const failed = responses.filter((r) => r.status !== 201);
 
     expect(success.length).toBe(1);
     expect(failed.length).toBeGreaterThan(0);
@@ -89,7 +85,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(logins);
-    const success = responses.filter(r => r.status === 201);
+    const success = responses.filter((r) => r.status === 201);
 
     expect(success.length).toBeGreaterThan(0);
   });
@@ -107,7 +103,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect(res.status).toBe(201));
+    responses.forEach((res) => expect(res.status).toBe(201));
   });
 
   // 4
@@ -119,7 +115,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(logins);
-    responses.forEach(res => expect(res.status).toBe(401));
+    responses.forEach((res) => expect(res.status).toBe(401));
   });
 
   // 5
@@ -135,7 +131,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    const success = responses.filter(r => r.status === 201);
+    const success = responses.filter((r) => r.status === 201);
 
     expect(success.length).toBe(1);
   });
@@ -153,7 +149,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect(res.status).toBe(201));
+    responses.forEach((res) => expect(res.status).toBe(201));
   });
 
   // 7
@@ -165,20 +161,18 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(logins);
-    const success = responses.filter(r => r.status === 201);
+    const success = responses.filter((r) => r.status === 201);
 
     expect(success.length).toBeGreaterThan(0);
   });
 
   // 8
   it('debería manejar POST y GET simultáneos', async () => {
-    const post = request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        name: 'Mixed',
-        email: 'mixed@test.com',
-        password: '123456',
-      });
+    const post = request(app.getHttpServer()).post('/auth/register').send({
+      name: 'Mixed',
+      email: 'mixed@test.com',
+      password: '123456',
+    });
 
     const get = request(app.getHttpServer())
       .get('/users')
@@ -197,7 +191,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect(res.status).toBe(400));
+    responses.forEach((res) => expect(res.status).toBe(400));
   });
 
   // 10
@@ -213,7 +207,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect(res.status).toBe(201));
+    responses.forEach((res) => expect(res.status).toBe(201));
   });
 
   // 11
@@ -229,7 +223,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect(res.status).toBe(201));
+    responses.forEach((res) => expect(res.status).toBe(201));
   });
 
   // 12
@@ -246,7 +240,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect(res.status).toBe(201));
+    responses.forEach((res) => expect(res.status).toBe(201));
   });
 
   // 13
@@ -255,13 +249,11 @@ describe('Auth Module - Concurrency Tests (15)', () => {
       .post('/auth/login')
       .send({ email: 'base@test.com', password: '123456' });
 
-    const register = request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        name: 'Parallel',
-        email: 'parallel@test.com',
-        password: '123456',
-      });
+    const register = request(app.getHttpServer()).post('/auth/register').send({
+      name: 'Parallel',
+      email: 'parallel@test.com',
+      password: '123456',
+    });
 
     const [loginRes, regRes] = await Promise.all([login, register]);
 
@@ -278,7 +270,7 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect(res.status).toBe(401));
+    responses.forEach((res) => expect(res.status).toBe(401));
   });
 
   // 15
@@ -294,6 +286,6 @@ describe('Auth Module - Concurrency Tests (15)', () => {
     );
 
     const responses = await Promise.all(requests);
-    responses.forEach(res => expect([201, 400]).toContain(res.status));
+    responses.forEach((res) => expect([201, 400]).toContain(res.status));
   });
 });
