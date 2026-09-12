@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - SegurityGAB
+name: CI/CD & Docker Packages Pipeline - SegurityGAB
 
 on:
   push:
@@ -6,6 +6,8 @@ on:
       - main
       - master
       - develop
+    tags:
+      - 'v*.*.*'
   pull_request:
     branches:
       - main
@@ -16,6 +18,13 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
 
 jobs:
   # ==========================================
@@ -29,38 +38,31 @@ jobs:
         working-directory: backend
 
     steps:
-      - name: Checkout Repository
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20.x
+      - name: ⚙️ Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
 
-      - name: Install Backend Dependencies
+      - name: 📦 Install Backend Dependencies
         run: npm ci
 
-      - name: Run ESLint Linter
+      - name: 🔍 Run ESLint Linter
         run: npm run lint
 
-      - name: Build Backend (NestJS)
+      - name: 🏗️ Build Backend (NestJS)
         run: npm run build
 
-      - name: Run Backend Test Suite (Smoke, Unit, White-box, Integration, Black-box)
+      - name: 🧪 Run Backend Test Suite (Smoke, Unit, White-box, Integration, Black-box)
         run: npm run test:ci
         env:
           NODE_ENV: test
           DB_DISABLED: 'true'
           JWT_SECRET: ci_test_jwt_secret_key_12345
-
-      - name: Upload Backend Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-dist
-          path: backend/dist/
-          retention-days: 7
 
   # ==========================================
   # 2. FRONTEND CI (Next.js & React)
@@ -73,67 +75,112 @@ jobs:
         working-directory: frontend
 
     steps:
-      - name: Checkout Repository
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20.x
+      - name: ⚙️ Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install Frontend Dependencies
+      - name: 📦 Install Frontend Dependencies
         run: npm ci
 
-      - name: Run Frontend Unit & Integration Tests (Jest)
+      - name: 🧪 Run Frontend Unit & Integration Tests (Jest)
         run: npm run test:ci
 
-      - name: Build Frontend (Next.js)
+      - name: 🏗️ Build Frontend (Next.js)
         run: npm run build
         env:
           NODE_ENV: production
           NEXT_TELEMETRY_DISABLED: 1
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
 
-      - name: Upload Frontend Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: |
-            frontend/.next/
-            frontend/public/
-          retention-days: 7
-
   # ==========================================
-  # 3. CD / DEPLOYMENT (Continuous Delivery)
+  # 3. DOCKER BUILD & PUBLISH TO GITHUB PACKAGES (GHCR)
   # ==========================================
-  cd-deploy:
-    name: Continuous Deployment (CD)
-    needs: [backend-ci, frontend-ci]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  docker-publish-backend:
+    name: 🐳 Build & Push Backend Docker Image to GitHub Packages
+    needs: [backend-ci]
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
-      - name: Checkout Repository
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Download Backend Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-dist
-          path: backend/dist
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Download Frontend Artifact
-        uses: actions/download-artifact@v4
+      - name: 🔑 Log in to GitHub Container Registry (ghcr.io)
+        uses: docker/login-action@v3
         with:
-          name: frontend-build
-          path: frontend/.next
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deployment Ready Status
-        run: |
-          echo "========================================="
-          echo " CI checks passed for Backend & Frontend"
-          echo " Production artifacts successfully generated"
-          echo " Ready for deployment to production environment"
-          echo "========================================="
+      - name: 🏷️ Extract Metadata for Backend Docker Image
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/backend
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha,format=short
+
+      - name: 🚀 Build and Push Backend Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  docker-publish-frontend:
+    name: 🐳 Build & Push Frontend Docker Image to GitHub Packages
+    needs: [frontend-ci]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔑 Log in to GitHub Container Registry (ghcr.io)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Extract Metadata for Frontend Docker Image
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/frontend
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha,format=short
+
+      - name: 🚀 Build and Push Frontend Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
